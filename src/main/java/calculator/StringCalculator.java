@@ -18,9 +18,13 @@ public class StringCalculator {
         String numbers = input;
         String delimiter = DEFAULT_DELIMITERS;
 
-        if (matcher.matches()) {
+        if (matcher.find()) {
+            validateCustomDelimiterPosition(input);
             delimiter = matcher.group(1);
             numbers = matcher.group(2);
+            validateCustomAndDefaultMix(numbers);
+        } else {
+            validateUndeclaredCustomDelimiter(input);
         }
 
         String[] tokens = numbers.split(delimiter);
@@ -42,6 +46,24 @@ public class StringCalculator {
             }
         } catch (NumberFormatException e) {
             throw new InvalidInputException("잘못된 숫자 형식입니다: " + token);
+        }
+    }
+
+    private static void validateCustomDelimiterPosition(String input) {
+        if (!input.startsWith("//")) {
+            throw new InvalidInputException("커스텀 구분자는 맨 앞에 위치해야 합니다.");
+        }
+    }
+
+    private static void validateCustomAndDefaultMix(String numbers) {
+        if (numbers.matches(".*[,:].*")) {
+            throw new InvalidInputException("커스텀 구분자와 기본 구분자를 혼용할 수 없습니다.");
+        }
+    }
+
+    private static void validateUndeclaredCustomDelimiter(String input) {
+        if (input.contains(";") || input.contains("|")) {
+            throw new InvalidInputException("커스텀 구분자가 선언되지 않았습니다.");
         }
     }
 }
