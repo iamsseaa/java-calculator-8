@@ -23,10 +23,25 @@ public class StringCalculator {
             numbers = matcher.group(2);
         }
 
-        String[] tokens = input.split("[,:]");
-        return Arrays.stream(tokens)
-                .map(String::trim)
-                .mapToInt(Integer::parseInt)
-                .sum();
+        String[] tokens = numbers.split(delimiter);
+
+        int sum = 0;
+        for (String token : tokens) {
+            validateNumber(token);
+            sum += Integer.parseInt(token);
+        }
+
+        return sum;
+    }
+
+    private static void validateNumber(String token) {
+        try {
+            int number = Integer.parseInt(token);
+            if (number < 0) {
+                throw new InvalidInputException("음수는 입력할 수 없습니다 : " + number);
+            }
+        } catch (NumberFormatException e) {
+            throw new InvalidInputException("잘못된 숫자 형식입니다: " + token);
+        }
     }
 }
